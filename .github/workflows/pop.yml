@@ -1,4 +1,5 @@
-name: Pop Script Runner
+name: pop
+run-name: pop ${{ inputs.slug }}
 
 on:
   workflow_dispatch:
@@ -10,7 +11,7 @@ on:
 
 jobs:
   pop:
-    name: Run Pop Script
+    name: pop
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
