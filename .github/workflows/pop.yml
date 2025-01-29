@@ -1,0 +1,26 @@
+name: Pop Script Runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: "Slug to process"
+        required: true
+        type: string
+
+jobs:
+  pop:
+    name: Run Pop Script
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run pop script
+        run: bun pop.ts ${{ inputs.slug }}
+        env:
+          EVENT_POPPER_URL: ${{ secrets.EVENT_POPPER_URL }}
+          EVENT_POPPER_JWT_SECRET: ${{ secrets.EVENT_POPPER_JWT_SECRET }}
