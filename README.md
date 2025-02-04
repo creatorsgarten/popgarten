@@ -6,6 +6,12 @@ To install dependencies:
 bun install
 ```
 
+To preview locally:
+
+```bash
+bun dev
+```
+
 To run:
 
 ```bash

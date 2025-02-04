@@ -14,5 +14,8 @@
     "cheerio": "^1.0.0",
     "jose": "^5.9.6",
     "ofetch": "^1.4.1"
+  },
+  "scripts": {
+    "dev": "bun --watch index.ts"
   }
 }
