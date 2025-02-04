@@ -1,7 +1,7 @@
-import { load } from "cheerio";
 import { SignJWT } from "jose";
 import { parseArgs } from "node:util";
 import { ofetch } from "ofetch";
+import { getEventProcessedContent } from "./getEventProcessedContent";
 
 async function main() {
   const args = parseArgs({
@@ -17,10 +17,7 @@ async function main() {
     console.error("No slug provided");
     return;
   }
-  const url = `https://creatorsgarten.org/event/${slug}?embed=true`;
-  const baseUrl = `https://creatorsgarten.org/event/${slug}`;
-  const html = await ofetch(url);
-  const processedContent = processContent(html, baseUrl);
+  const processedContent = await getEventProcessedContent(slug);
   const { eventId, description } = processedContent;
   if (args.values.test) {
     console.warn("Test mode, skipping update");
@@ -48,45 +45,6 @@ async function main() {
     },
   });
   console.log("Update result:", result);
-}
-
-function processContent(html: string, baseUrl: string) {
-  const $ = load(html);
-  const $content = $(".prose");
-  let eventId: number | undefined;
-
-  {
-    const eventpopLink = $content
-      .find('a img[alt="Tickets available at eventpop.me"]')
-      .closest("a")
-      .attr("href");
-    const match = eventpopLink?.match(/e\/(\d+)/);
-    if (match) {
-      eventId = +match[1];
-    }
-  }
-
-  $content
-    .find('a img[alt="Tickets available at eventpop.me"]')
-    .closest("p")
-    .remove();
-  $content.find("nav").remove();
-
-  $content.find("*").removeAttr("id");
-  $content.find("h2").addClass("mt-5 h3 text-heading");
-  $content.find("a > span.icon.icon-link").closest("a").remove();
-  $content.find("a").each(function () {
-    const $a = $(this);
-    if ($a.attr("href")) {
-      $a.attr("href", new URL($a.attr("href")!, baseUrl).toString()).attr(
-        "target",
-        "_blank"
-      );
-    }
-  });
-
-  const content = $content.html();
-  return { description: content, eventId };
 }
 
 await main();
